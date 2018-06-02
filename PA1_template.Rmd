@@ -5,8 +5,7 @@ Reproducible Research Assignment 1
 
 First, load the data into an object "data".
 
-
-```r
+```{r}
 ## Set working directory
 setwd("D:/Xiao Xin/My Folder/Coursera/Data Science/05 Reproducible Research/Assignment 1")
 
@@ -19,8 +18,7 @@ Next, pre-process the data to the correct date and time format:
   1. Convert date column into POSIX YYYY-MM-DD format.
   2. Convert interval column into POSIX HH:MM:SS format.
 
-
-```r
+```{r}
 ## Convert character date to POSIX date
 data$date <- as.POSIXct(strptime(data$date, "%Y-%m-%d"), tz="")
 
@@ -35,8 +33,7 @@ data$time <- as.POSIXct(data$time, "%H%M", tz="")
 
 Create a new data frame "totalsteps" which aggregates the total number of steps taken each day. 
 
-
-```r
+```{r}
 ## Create new data frame for total steps per day
 totalsteps <- aggregate(list(total_steps = data$steps),
                         by=list(date = data$date),
@@ -46,8 +43,7 @@ totalsteps <- aggregate(list(total_steps = data$steps),
 
 Plot a histogram to show the frequency of total steps.
 
-
-```r
+```{r}
 ## Plot a histogram on the total number of steps taken per day
 hist(totalsteps$total_steps,
      breaks=30,
@@ -56,35 +52,21 @@ hist(totalsteps$total_steps,
      col="lightblue")
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
-
 Calculate the mean and median of the total number of steps taken per day.
 
-
-```r
+```{r}
 ## Calculate mean of total steps taken per day
 mean(totalsteps$total_steps)
-```
 
-```
-## [1] 9354.23
-```
-
-```r
 ## Calculate median of total steps taken per day 
 median(totalsteps$total_steps,na.rm=TRUE)
-```
-
-```
-## [1] 10395
 ```
 
 ##Average Daily Activity Pattern
 
 Create a new data frame that contains the average number of steps taken across all days for each time interval. 
 
-
-```r
+```{r}
 ## Create new data frame for the average number of steps for each time interval
 average_steps_by_time <- aggregate(list(average_steps = data$steps),
                                    by=list(time = data$time,
@@ -95,8 +77,7 @@ average_steps_by_time <- aggregate(list(average_steps = data$steps),
 
 Plot a line graph which shows the average number of steps at each time interval. 
 
-
-```r
+```{r}
 plot(average_steps ~ time,
      data=average_steps_by_time,
      xlab="Time Interval",
@@ -107,38 +88,24 @@ plot(average_steps ~ time,
      lwd=2)
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
-
 Find out which time interval has the highest average number of steps. 
 
-
-```r
+```{r}
 average_steps_by_time[which.max(average_steps_by_time$average_steps),]
-```
-
-```
-##                    time interval average_steps
-## 104 2018-06-02 08:35:00      835      206.1698
 ```
 
 ##Impute Missing Values
 
 Count the number of rows with missing values (i.e. steps="NA").
 
-
-```r
+```{r}
 ## Count the number of rows with "NA"
 sum(is.na(data[,"steps"]))
 ```
 
-```
-## [1] 2304
-```
-
 Replace the missing values with the mean number of steps for that time interval, and put it in a new dataset "data_imputed".
 
-
-```r
+```{r}
 ## Combine "data" with "average_steps_by_time" by the interval field
 data_imputed <- merge(data, average_steps_by_time, by="interval")
 
@@ -152,8 +119,7 @@ data_imputed <- within(data_imputed,
 
 Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. 
 
-
-```r
+```{r}
 ## Calculate total number of steps per day
 totalsteps2 <- aggregate(list(total_steps = data_imputed$steps),
                                          by=list(date = data_imputed$date),
@@ -166,26 +132,12 @@ hist(totalsteps2$total_steps,
      xlab="Total Steps",
      main="Total Steps Per Day",
      col="lightblue")
-```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
-
-```r
 ## Calculate mean of total steps taken per day
 mean(totalsteps2$total_steps)
-```
 
-```
-## [1] 10766.19
-```
-
-```r
 ## Calculate median of total steps taken per day 
 median(totalsteps2$total_steps,na.rm=TRUE)
-```
-
-```
-## [1] 10766.19
 ```
 
 
@@ -194,8 +146,7 @@ median(totalsteps2$total_steps,na.rm=TRUE)
 
 Create a new factor variable in the dataset which indicates if a date is "weekday" or "weekend".
 
-
-```r
+```{r}
 ## Add character column "day of week"
 data_imputed$weekday  <- weekdays(data_imputed$date)
 
@@ -210,8 +161,7 @@ data_imputed$weekend_indicator <- as.factor(apply(data_imputed["weekday"], 1, fu
 
 Create a plot to show the average number of steps taken at each time interval for "weekday" vs "weekend".
 
-
-```r
+```{r}
 ## Create plot
 average_steps_by_time2 <- aggregate(list(average_steps = data_imputed$steps),
                                     by=list(time = data_imputed$time.x,
@@ -227,7 +177,5 @@ qplot(x = time,
       main="Activity Patterns\nWeekdays vs. Weekends",
       facets = daytype ~ .)
 ```
-
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
 
 
